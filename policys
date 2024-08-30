@@ -1,5 +1,6 @@
 # ClusterPolicy :
 
+```
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -25,3 +26,5 @@ spec:
                   requests:
                     cpu: "{{ '>=50m', '<=500m' }}"       # CPU request must be between 50m and 500m
                     memory: "{{ '>=64Mi', '<=1Gi' }}"    # Memory request must be between 64Mi and 1Gi
+
+```
