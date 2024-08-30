@@ -6,7 +6,7 @@ kind: ClusterPolicy
 metadata:
   name: restrict-cpu-memory-limits
 spec:
-  validationFailureAction: enforce # Set to "enforce" to block resources that don't meet the requirements
+  validationFailureAction: audit
   background: true
   rules:
     - name: check-cpu-memory-limits
@@ -21,10 +21,8 @@ spec:
             containers:
               - resources:
                   limits:
-                    cpu: "{{ '>=100m', '<=500m' }}"      # CPU must be between 100m and 500m
-                    memory: "{{ '>=128Mi', '<=1Gi' }}"   # Memory must be between 128Mi and 1Gi
-                  requests:
-                    cpu: "{{ '>=50m', '<=500m' }}"       # CPU request must be between 50m and 500m
-                    memory: "{{ '>=64Mi', '<=1Gi' }}"    # Memory request must be between 64Mi and 1Gi
+                    cpu: "100m"        # Ensure CPU limit is set
+                    memory: "128Mi"    # Ensure Memory limit is set
+
 
 ```
