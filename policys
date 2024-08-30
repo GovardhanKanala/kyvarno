@@ -1,0 +1,27 @@
+# ClusterPolicy :
+
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-cpu-memory-limits
+spec:
+  validationFailureAction: enforce # Set to "enforce" to block resources that don't meet the requirements
+  background: true
+  rules:
+    - name: check-cpu-memory-limits
+      match:
+        resources:
+          kinds:
+            - Pod
+      validate:
+        message: "CPU and Memory limits must be set within the allowed range."
+        pattern:
+          spec:
+            containers:
+              - resources:
+                  limits:
+                    cpu: "{{ '>=100m', '<=500m' }}"      # CPU must be between 100m and 500m
+                    memory: "{{ '>=128Mi', '<=1Gi' }}"   # Memory must be between 128Mi and 1Gi
+                  requests:
+                    cpu: "{{ '>=50m', '<=500m' }}"       # CPU request must be between 50m and 500m
+                    memory: "{{ '>=64Mi', '<=1Gi' }}"    # Memory request must be between 64Mi and 1Gi
