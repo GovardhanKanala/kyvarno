@@ -26,3 +26,30 @@ spec:
 
 
 ```
+
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: audit-high-resource-usage
+spec:
+  validationFailureAction: audit
+  background: true
+  rules:
+  - name: audit-pod-resource-limits
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "Pod requests more than 4 CPU cores or 4GB memory."
+      pattern:
+        spec:
+          containers:
+            - resources:
+                requests:
+                  cpu: "4"
+                  memory: "4Gi"
+                limits:
+                  cpu: "4"
+                  memory: "4Gi"
+
