@@ -53,3 +53,59 @@ spec:
                   cpu: "4"
                   memory: "4Gi"
 
+
+
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-pod-cpu
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+  - name: restrict-cpu-limit
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "Pod cannot request more than 4 CPU cores."
+      pattern:
+        spec:
+          containers:
+            - resources:
+                requests:
+                  cpu: "!4"
+                limits:
+                  cpu: "!4"
+
+
+
+
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-resource-requests-limits
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+  - name: require-cpu-and-memory-limits
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "Pod must specify both CPU and memory requests and limits."
+      pattern:
+        spec:
+          containers:
+            - resources:
+                requests:
+                  cpu: "?*"
+                  memory: "?*"
+                limits:
+                  cpu: "?*"
+                  memory: "?*"
+
+
