@@ -134,3 +134,29 @@ spec:
                   cpu: "?*"
                   memory: "?*"
 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-over-cpu
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        resources:
+          requests:
+            cpu: "5"   # Requesting more than 4 CPUs
+            memory: "512Mi"
+          limits:
+            cpu: "5"   # Limiting to more than 4 CPUs
+            memory: "512Mi"
