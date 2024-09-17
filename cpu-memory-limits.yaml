@@ -1,0 +1,35 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-cpu-memory-limits
+  annotations:
+    policies.kyverno.io/title: "Restrict CPU and Memory Limits"
+    policies.kyverno.io/category: "Resource Quotas"
+    policies.kyverno.io/severity: "medium"
+    policies.kyverno.io/description: "Enforces CPU and memory limits for Pods in the cluster."
+
+spec:
+  validationFailureAction: audit # Change to 'enforce' to make it mandatory
+  background: true
+  rules:
+    - name: validate-cpu-memory-limits
+      match:
+        resources:
+          kinds:
+            - Pod
+      validate:
+        message: "CPU and Memory limits are required and must be within specified bounds."
+        pattern:
+          spec:
+            containers:
+              - resources:
+                  limits:
+                    memory: 
+                      max: "1Gi"  # Set max memory limit
+                      min: "256Mi" # Set min memory limit
+                    cpu:
+                      max: "500m"  # Set max CPU limit
+                      min: "100m"  # Set min CPU limit
+                  requests:
+                    memory: "256Mi" # Ensure requests match
+                    cpu: "100m" # Ensure requests match
