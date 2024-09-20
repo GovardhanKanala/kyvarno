@@ -1,35 +1,39 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: restrict-cpu-memory-limits
-  annotations:
-    policies.kyverno.io/title: "Restrict CPU and Memory Limits"
-    policies.kyverno.io/category: "Resource Quotas"
-    policies.kyverno.io/severity: "medium"
-    policies.kyverno.io/description: "Enforces CPU and memory limits for Pods in the cluster."
-
+  name: restrict-resources
 spec:
-  validationFailureAction: audit # Change to 'enforce' to make it mandatory
-  background: true
+  validationFailureAction: enforce
   rules:
-    - name: validate-cpu-memory-limits
+    - name: validate-resource-limits
       match:
         resources:
           kinds:
             - Pod
       validate:
-        message: "CPU and Memory limits are required and must be within specified bounds."
+        message: "Pods cannot request more than 4 GiB of memory or more than 4 CPU cores."
         pattern:
           spec:
             containers:
               - resources:
                   limits:
-                    memory: 
-                      max: "1Gi"  # Set max memory limit
-                      min: "256Mi" # Set min memory limit
-                    cpu:
-                      max: "500m"  # Set max CPU limit
-                      min: "100m"  # Set min CPU limit
+                    memory: "?*Gi"
+                    cpu: "?*"
                   requests:
-                    memory: "256Mi" # Ensure requests match
-                    cpu: "100m" # Ensure requests match
+                    memory: "?*Gi"
+                    cpu: "?*"
+        validate:
+          message: "Resource limits exceeded: maximum memory is 4Gi and maximum CPU is 4."
+          anyPattern:
+            - spec:
+                containers:
+                  - resources:
+                      limits:
+                        memory: "!~^(5|[6-9]|[1-9][0-9]+)(Gi)$"
+                        cpu: "!~^(5|[6-9]|[1-9][0-9]+)$"
+            - spec:
+                containers:
+                  - resources:
+                      requests:
+                        memory: "!~^(5|[6-9]|[1-9][0-9]+)(Gi)$"
+                        cpu: "!~^(5|[6-9]|[1-9][0-9]+)$"
