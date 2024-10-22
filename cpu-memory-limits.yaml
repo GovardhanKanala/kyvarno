@@ -1,3 +1,8 @@
+#{{- $name := "disallow-capabilities" }}
+#{{- if and (eq $name "disallow-capabilities") (eq .Values.podSecurityStandard.custom true) }}
+  # Your Kyverno policy definition goes here
+#{{- end }}
+#
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
